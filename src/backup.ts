@@ -39,7 +39,7 @@ const dumpToFile = async (path: string) => {
 
   await new Promise((resolve, reject) => {
     exec(
-      `pg_dump ${env.BACKUP_DATABASE_URL} -F t ${env.PG_DUMP_ARGS} | gzip > ${path}`,
+      `pg_dump ${env.BACKUP_DATABASE_URL} -F t ${env.PG_DUMP_ARGS} --file ${path}`,
       (error, stdout, stderr) => {
         if (error) {
           reject({ error: JSON.stringify(error), stderr });
