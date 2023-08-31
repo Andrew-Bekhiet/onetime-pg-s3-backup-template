@@ -3,7 +3,7 @@ import { env } from "./env"
 
 const tryBackup = async () => {
   try {
-    await new Promise(f => setTimeout(f, 2500)); // Wait for railway dns
+    await new Promise(f => setTimeout(f, 10000)); // Wait for railway dns
     await backup()
     process.exit(0)
   } catch (error) {
