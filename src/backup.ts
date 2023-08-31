@@ -13,7 +13,7 @@ const uploadToS3 = async ({ name, path }: { name: string; path: string }) => {
     region:
       env.AWS_S3_REGION && env.AWS_S3_REGION !== ""
         ? env.AWS_S3_REGION
-        : 'auto',
+        : "auto",
   };
 
   if (env.AWS_S3_ENDPOINT && env.AWS_S3_ENDPOINT !== "") {
@@ -35,16 +35,21 @@ const uploadToS3 = async ({ name, path }: { name: string; path: string }) => {
 };
 
 const dumpToFile = async (path: string, retryCount: number) => {
-  console.log("Dumping DB to file...");
+  console.log(
+    "Dumping DB to file, retryCount: " + retryCount.toString() + "..."
+  );
 
   await new Promise((resolve, reject) => {
     exec(
       `pg_dump ${env.BACKUP_DATABASE_URL} -F t ${env.PG_DUMP_ARGS}`,
       (error, stdout, stderr) => {
-        if (error && error.toString().contains("Name does not resolve") && retryCount < 5){
-          resolve(dumpToFile(filepath, retryCount + 1));
-        }
-        else if (error) {
+        if (
+          error &&
+          error.toString().includes("Name does not resolve") &&
+          retryCount < 5
+        ) {
+          resolve(dumpToFile(path, retryCount + 1));
+        } else if (error) {
           reject({ error: JSON.stringify(error), stderr });
           return;
         }
