@@ -39,6 +39,8 @@ const dumpToFile = async (path: string, retryCount: number) => {
     "Dumping DB to file, retryCount: " + retryCount.toString() + "..."
   );
 
+  await new Promise(f => setTimeout(f, 5000)); // Wait for railway dns
+
   await new Promise((resolve, reject) => {
     exec(
       `pg_dump ${env.BACKUP_DATABASE_URL} -F t ${env.PG_DUMP_ARGS} --file ${path}`,
