@@ -8,6 +8,11 @@ export const env = envsafe({
     allowEmpty: true,
     default: "",
   }),
+  PG_DUMP_ARGS: str({
+    allowEmpty: true,
+    default: "",
+    desc: "Additional args to pg_dump command",
+  }),
   BACKUP_DATABASE_URL: str({
     desc: "The connection string of the database to backup.",
   }),
