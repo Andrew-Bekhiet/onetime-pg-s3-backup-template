@@ -34,14 +34,17 @@ const uploadToS3 = async ({ name, path }: { name: string; path: string }) => {
   console.log("Backup uploaded to S3...");
 };
 
-const dumpToFile = async (path: string) => {
+const dumpToFile = async (path: string, retryCount: number) => {
   console.log("Dumping DB to file...");
 
   await new Promise((resolve, reject) => {
     exec(
       `pg_dump ${env.BACKUP_DATABASE_URL} -F t ${env.PG_DUMP_ARGS}`,
       (error, stdout, stderr) => {
-        if (error) {
+        if (error && error.toString().contains("Name does not resolve") && retryCount < 5){
+          resolve(dumpToFile(filepath, retryCount + 1));
+        }
+        else if (error) {
           reject({ error: JSON.stringify(error), stderr });
           return;
         }
@@ -73,7 +76,7 @@ export const backup = async () => {
   const filename = `backup-${timestamp}.tar.gz`;
   const filepath = `/tmp/${filename}`;
 
-  await dumpToFile(filepath);
+  await dumpToFile(filepath, 0);
   await uploadToS3({ name: filename, path: filepath });
   await deleteFile(filepath);
 
